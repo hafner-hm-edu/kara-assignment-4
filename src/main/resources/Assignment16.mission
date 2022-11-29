@@ -1,5 +1,6 @@
 Duplikate prüfen
 Schreiben Sie ein Programm, das die Blätter in Karas Welt um die angegebene Anzahl Spalten horizontal verschiebt. Die Welt von Kara ist beliebig groß und enthält ein beliebiges Muster aus Blättern. Der komplette Rand der Welt ist mit Bäumen eingefasst. Die Welt soll dabei so verschoben werden, dass Spalten, die links bzw. rechts herausgeschoben werden, auf der gegenüberliegenden Seite wieder hineingeschoben werden.
 Assignment16-Punkt.world
+Assignment16-Quadrat.world
 Assignment16-Rectangle-Left.world
 Assignment16-Rectangle-Right.world
