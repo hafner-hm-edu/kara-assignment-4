@@ -3,45 +3,102 @@ package edu.hm.hafner.kara;
 import static de.i8k.karalight.Kara.*;
 
 /**
- * KaraLight: Template für die Übungsaufgaben.
+ * KaraLight: solution of assignment 15.
  *
  * @author Ullrich Hafner
  */
 public class Assignment15 {
+    private static final int DUPLICATE_COUNT = 2;
+
     /**
-     * Die {@code main} Methode ist der Ausgangspunkt für KaraLight. Hier wird direkt in Java programmiert, folgende
-     * Kara-Befehle können verwendet werden, um Kara zu steuern:
-     * <ul>
-     *   <li>{@code move()} - Kara bewegt sich einen Schritt nach vorn. Das geht nur, wenn vor Kara kein Baum ist!
-     *   Wenn vor Kara ein Pilz ist, schiebt Kara den Pilz eine Position weiter.
-     *   (Das setzt wiederum voraus, dass der Platz vor dem Pilz frei ist). </li>
-     *   <li>{@code turnRight()} bzw. {@code turnLeft()} - Kara dreht sich nach rechts bzw. links</li>
-     *   <li>{@code pickLeaf()} - Kara nimmt ein Blatt auf (geht nur, wenn eins da ist!)</li>
-     *   <li>{@code putLeaf()} - Kara legt ein Blatt ab (geht nur, wenn keins da ist!)</li>
-     *   <li>{@code say(...)} - Kara gibt einen Text in einem Fenster aus.</li>
-     *   <li>{@code askNumber(...)} - Kara fragt nach einer Zahl, die den Ablauf des Programms variabel gestaltet.</li>
-     * </ul>
-     * Zusätzlich stehen Ihnen die folgenden Abfragen zur Verfügung:
-     * <ul>
-     *   <li>{@code isMushroomInFront()} - liefert {@code true}, wenn vor Kara ein Pilz steht</li>
-     *   <li>{@code isTreeInFront()} - liefert {@code true}, wenn vor Kara ein Baum steht</li>
-     *   <li>{@code isTreeLeft()} - liefert {@code true}, wenn links von Kara ein Baum steht</li>
-     *   <li>{@code isTreeRight()} - liefert {@code true}, wenn rechts von Kara ein Baum steht</li>
-     *   <li>{@code isOnLeaf()} - liefert {@code true}, wenn Kara auf einem Blatt steht</li>
-     * </ul>
+     * Entrypoint for Kara: this method is called once if you press the 'Ausführen' button in KaraLight.
      *
      * @param unused
-     *         Dieser Parameter wird von Kara nicht benutzt, muss aber bestehen bleiben, damit die KaraLight
-     *         Oberfläche in der Entwicklungsumgebung gestartet werden kann. Dieser Parameter ist auch erforderlich,
-     *         damit die automatisierte Auswertung der Ergebnisse funktioniert.
+     *         this parameter is not used by KaraLight
      */
     public static void main(final String... unused) {
-        // Beispielcode, kann entfernt werden
-        if (isOnLeaf()) {
-            pickLeaf();
-        }
-        else {
-            putLeaf();
+        int[] duplicates = findDuplicates();
+        if (duplicates.length == DUPLICATE_COUNT) {
+            int y = 0;
+            for (; y < duplicates[0]; y++) {
+                moveDown();
+            }
+            moveMushroom();
+            for (; y < duplicates[1]; y++) {
+                moveDown();
+            }
+            moveMushroom();
+            for (; y < 10; y++) {
+                moveDown();
+            }
         }
     }
+
+    private static void moveMushroom() {
+        moveBy(11);
+        turnAround();
+        moveBy(11);
+        turnAround();
+    }
+
+    private static void turnAround() {
+        turnRight();
+        turnRight();
+    }
+
+    private static void moveBy(final int distance) {
+        for (int y = 0; y < distance; y++) {
+            move();
+        }
+    }
+
+    private static int[] findDuplicates() {
+        int[] found = new int[0];
+        for (int y = 0; y < 10 - 1; y++) {
+            for (int c = 0; c < y; c++) {
+                moveDown();
+            }
+            boolean[] compare = copyColumn(10);
+
+            for (int c = y + 1; c < 10; c++) {
+                moveDown();
+                boolean[] check = copyColumn(10);
+                if (equals(compare, check)) {
+                    found = new int[]{y, c};
+                }
+            }
+            moveDown();
+        }
+        return found;
+    }
+
+    static void moveDown() {
+        turnRight();
+        move();
+        turnLeft();
+    }
+
+    static boolean equals(final boolean[] a1, final boolean[] a2) {
+        for (int i = 0; i < a1.length; i++) {
+            if (a1[i] != a2[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static boolean[] copyColumn(final int width) {
+        boolean[] column = new boolean[width];
+        column[0] = isOnLeaf();
+        for (int i = 1; i < width; i++) {
+            move();
+            column[i] = isOnLeaf();
+        }
+        turnAround();
+        moveBy(width - 1);
+        turnAround();
+
+        return column;
+    }
+
 }

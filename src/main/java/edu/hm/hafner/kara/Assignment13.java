@@ -3,45 +3,92 @@ package edu.hm.hafner.kara;
 import static de.i8k.karalight.Kara.*;
 
 /**
- * KaraLight: Template für die Übungsaufgaben.
+ * KaraLight: solution of assignment 13.
  *
  * @author Ullrich Hafner
  */
 public class Assignment13 {
     /**
-     * Die {@code main} Methode ist der Ausgangspunkt für KaraLight. Hier wird direkt in Java programmiert, folgende
-     * Kara-Befehle können verwendet werden, um Kara zu steuern:
-     * <ul>
-     *   <li>{@code move()} - Kara bewegt sich einen Schritt nach vorn. Das geht nur, wenn vor Kara kein Baum ist!
-     *   Wenn vor Kara ein Pilz ist, schiebt Kara den Pilz eine Position weiter.
-     *   (Das setzt wiederum voraus, dass der Platz vor dem Pilz frei ist). </li>
-     *   <li>{@code turnRight()} bzw. {@code turnLeft()} - Kara dreht sich nach rechts bzw. links</li>
-     *   <li>{@code pickLeaf()} - Kara nimmt ein Blatt auf (geht nur, wenn eins da ist!)</li>
-     *   <li>{@code putLeaf()} - Kara legt ein Blatt ab (geht nur, wenn keins da ist!)</li>
-     *   <li>{@code say(...)} - Kara gibt einen Text in einem Fenster aus.</li>
-     *   <li>{@code askNumber(...)} - Kara fragt nach einer Zahl, die den Ablauf des Programms variabel gestaltet.</li>
-     * </ul>
-     * Zusätzlich stehen Ihnen die folgenden Abfragen zur Verfügung:
-     * <ul>
-     *   <li>{@code isMushroomInFront()} - liefert {@code true}, wenn vor Kara ein Pilz steht</li>
-     *   <li>{@code isTreeInFront()} - liefert {@code true}, wenn vor Kara ein Baum steht</li>
-     *   <li>{@code isTreeLeft()} - liefert {@code true}, wenn links von Kara ein Baum steht</li>
-     *   <li>{@code isTreeRight()} - liefert {@code true}, wenn rechts von Kara ein Baum steht</li>
-     *   <li>{@code isOnLeaf()} - liefert {@code true}, wenn Kara auf einem Blatt steht</li>
-     * </ul>
+     * Entrypoint for Kara: this method is called once if you press the 'Ausführen' button in KaraLight.
      *
      * @param unused
-     *         Dieser Parameter wird von Kara nicht benutzt, muss aber bestehen bleiben, damit die KaraLight
-     *         Oberfläche in der Entwicklungsumgebung gestartet werden kann. Dieser Parameter ist auch erforderlich,
-     *         damit die automatisierte Auswertung der Ergebnisse funktioniert.
+     *         this parameter is not used by KaraLight
      */
     public static void main(final String... unused) {
-        // Beispielcode, kann entfernt werden
-        if (isOnLeaf()) {
-            pickLeaf();
+        int height = computeHeight();
+        int width = computeWidth();
+
+        for (int x = 0; x < width; x++) {
+            boolean[] column = copyColumn(height);
+
+            pasteColumn(column);
+            turnLeft();
+            move();
         }
-        else {
+        turnRight();
+        move();
+        turnLeft();
+    }
+
+    static void pasteColumn(final boolean[] column) {
+        int height = column.length;
+        for (boolean b : column) {
+            move();
+            if (b && !isOnLeaf()) {
+                putLeaf();
+            }
+            else if (!b && isOnLeaf()) {
+                pickLeaf();
+            }
+        }
+        turnAround();
+        moveBy(height - 1);
+    }
+
+    static boolean[] copyColumn(final int height) {
+        turnRight();
+        boolean[] column = new boolean[height];
+        for (int i = 0; i < height; i++) {
+            move();
+            column[i] = isOnLeaf();
+        }
+        turnAround();
+        moveBy(height - 1);
+        return column;
+    }
+
+    static int computeHeight() {
+        turnLeft();
+        int height = 0;
+        while (!isTreeInFront()) {
+            height++;
+            move();
+        }
+        turnAround();
+        moveBy(height - 1);
+        turnLeft();
+        return height;
+    }
+
+    static int computeWidth() {
+        int width = 0;
+        while (!isOnLeaf()) {
+            width++;
             putLeaf();
+            move();
         }
+        return width;
+    }
+
+    static void turnAround() {
+        turnLeft();
+        turnLeft();
+    }
+
+    static void moveBy(final int moves) {
+        for (int i = 0; i < moves; i++) {
+            move();
+        }
+
     }
 }
